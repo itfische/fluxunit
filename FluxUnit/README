@@ -4,6 +4,9 @@ FluxUnit is a Behavior-Driven Testing Framework for Flex 3.  It is as direct a p
 Nick Kallen's Screw.Unit Javascript testing framework, plus a couple of additions (and more to come, including
 mocks and stubs if possible).  It has a lot in common with RSpec, a testing framework for Ruby.
 
+FluxUnit is available both on GoogleCode at http://code.google.com/p/fluxunit, and on GitHub at 
+http://github.com/itfische/fluxunit/tree/master. 
+
 Screw.Unit is available at http://github.com/nkallen/screw-unit/tree/master, if you are looking for an excellent
 Javascript testing framework.
 
