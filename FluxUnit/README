@@ -19,12 +19,17 @@ FluxUnit consists of two Flex projects:
 
 ====== Setting up the projects ======
 
-FluxUnitSpecs needs to be in the same root directory as FluxUnit to compile (which will presumably be your FlexBuilder
-workspace, so that shouldn't be an issue).
+FluxUnitSpecs needs to be in the same root directory as FluxUnit to compile.  If you are using FlexBuilder or Eclipse
+with the FlexBuilder plugin, you should create two new projects, one called FluxUnit, the other called FluxUnitSpecs.
+You should set the directories for these projects to /path/to/fluxunit/FluxUnit and /path/to/fluxunit/FluxUnitSpecs, 
+respectively.  Once you have done this, you will need to update the path to FluxUnit.swc in your FluxUnitSpecs 
+project.  Go to FluxUnitSpecs' project properties, click Flex Build Path, select the Library Path tab, click on 
+FluxUnit.swc and delete it, then click the "Add SWC..." button and navigate to 
+/path/to/fluxunit/FluxUnit/bin/FluxUnit.swc.  FluxUnitSpecs should now build.
 
 To use FluxUnit, you will generally include the FluxUnit.swc library file in your Flex project, either by placing it
 in your libs directory, or by including it through the Flex Build Path | Library Path tab of your project's
-properties.
+properties as described above for FluxUnitSpecs.
 
 ====== Creating a Test Suite ======
 
