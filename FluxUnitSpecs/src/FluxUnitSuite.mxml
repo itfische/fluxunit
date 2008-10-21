@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" xmlns:local="*" creationComplete="init();">
+  <mx:Style source="flux.css" />
+  <mx:Script>
+    <![CDATA[
+      import flux_unit.Flux;
+      import flux_unit.spec.MatchersSpec;
+      import flux_unit.spec.BehaviorSpec;
+      
+      private function init():void {        
+        Flux.setRoot(body);
+        
+        new BehaviorSpec();
+        new MatchersSpec();
+        
+        Flux.Run();
+      }
+    ]]>
+  </mx:Script>
+  <mx:VBox id="body" width="100%">
+  </mx:VBox>
+</mx:Application>

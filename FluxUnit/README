@@ -1,0 +1,234 @@
+====================== FluxUnit ======================
+
+FluxUnit is a Behavior-Driven Testing Framework for Flex 3.  It is as direct a port as I was able to make of 
+Nick Kallen's Screw.Unit Javascript testing framework, plus a couple of additions (and more to come, including
+mocks and stubs if possible).  It has a lot in common with RSpec, a testing framework for Ruby.
+
+Screw.Unit is available at http://github.com/nkallen/screw-unit/tree/master, if you are looking for an excellent
+Javascript testing framework.
+
+
+=========== Getting Started ===========
+
+FluxUnit consists of two Flex projects:
+ -- FluxUnit: the actual library for testing
+ -- FluxUnitSpecs: Two example testing suites, one for a simple example, and the other for testing FluxUnit itself
+
+====== Setting up the projects ======
+
+FluxUnitSpecs needs to be in the same root directory as FluxUnit to compile (which will presumably be your FlexBuilder
+workspace, so that shouldn't be an issue).
+
+To use FluxUnit, you will generally include the FluxUnit.swc library file in your Flex project, either by placing it
+in your libs directory, or by including it through the Flex Build Path | Library Path tab of your project's
+properties.
+
+====== Creating a Test Suite ======
+
+Once included, you should create a new Flex application called something appropriate, such as TestSuite.mxml.  Make
+this file one of your compiled applications in your project's properties.  The base mxml will look something like
+this:
+
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="init();">
+  <mx:Style source="flux.css" />
+  <mx:Script>
+    <![CDATA[
+      import flux_unit.Flux;
+      
+      private function init():void {
+        Flux.setRoot(body);
+
+        Flux.Run();
+      }
+    ]]>
+  </mx:Script>
+  <mx:VBox id="body" width="100%">
+  </mx:VBox>
+</mx:Application>
+
+That should already compile, but it won't do anything interesting.
+
+====== Creating a spec class ======
+
+Next, you should create a spec class.  For example, if you have a class called Foo, you might create a file called 
+FooSpec.as in a directory called specs.  In this case, FooSpec.as would start out looking like this:
+
+package spec {
+  import flux_unit.Flux;
+
+  public dynamic class FooSpec {
+    
+    public function FooSpec() {
+      var self:FooSpec = this;
+      new Flux(this).Unit(function():void {
+        with (self) {
+        
+        }
+      });
+    }
+  }
+}
+
+Note that this is a dynamic class.  If you try to pass in a non-dynamic class object to new Flux(), it will fail.
+
+Once you've created this, you should make your TestSuite.mxml's init function look like this:
+
+      private function init():void {
+        Flux.setRoot(body);
+        
+        new FooSpec();
+
+        Flux.Run();
+      }
+
+This should all compile, and you should be able to run this application (at least in a browser).  It won't produce 
+much of interest, though.
+
+====== Creating specs ======
+
+Now you are ready to start adding specs to FooSpec.as.  This is done by putting describes and its into the with
+block.  For example:
+
+with (self) {
+  describe("Foo", function():void {
+    var foo:Foo;
+    before(function():void {
+      foo = new Foo();
+    }
+    
+    it("creates a Foo object properly", function():void {
+      expect(foo).to_not(be_null());
+    }
+    
+    describe(".bar", function():void {
+      it("returns baz", function():void {
+        expect(foo.bar()).to(equal(), "baz");
+      });
+    });
+    
+    after(function():void {
+      foo.cleanup();
+    }
+  }
+}
+
+====== Different approaches to calling the FluxUnit functions in a spec class ======
+
+Due to an issue with the Flex compiler, only dynamically called methods compile correctly inside of a with -- if 
+you try to call a property inside of the with block it will give you a compile error.  This additionally causes 
+problems with access to static members of a class.  For example, trying to call:
+
+Foo.bar();
+
+inside of the with block will give a compile time error saying that Foo may not be defined.  In this case, you can say:
+
+public function FooSpec() {
+  var self:FooSpec = this;
+  self.foo = function():Class { return Foo; };
+  with (self) {
+    ...
+      foo().bar();
+    ...
+  }
+}
+
+If you don't want to jump through that particular hoop, you can write your specs without the with block, but you will 
+need to prefix all of the describes, befores, afters, its, expects, eventuallys, and the matchers (equal, etc.) with 
+"self.", e.g.:
+
+self.describe("Foo", function():void {
+  var foo:Foo;
+  self.before(function():void {
+    foo = new Foo();
+  }
+  self.it("creates a Foo object properly", function():void {
+    self.expect(foo).to_not(self.be_null());
+  }
+  ...
+});
+
+Alternatively, if you are testing a library in a different project, you can just turn off strict type checking in 
+your test project's Flex Compiler settings.  I think it will compile correctly without having to use either the 
+with block or putting "self." before all the properties, but you probably don't want to do this for your main 
+project.  However, I have not tested this myself.
+
+
+=========== Testing Asynchronous Calls ===========
+
+If you are testing callbacks to functions, you will need to create your functions using eventually().  For example:
+
+describe("setTimeout", function():void {
+  it("sets a timeout with a callback", function():void {
+    setTimeout(eventually(function():void {
+      expect(true).to(equal(), true);
+    }), 3000);
+  });
+});
+
+eventually() properly wraps the function you pass to it so that it hooks in to the before and after system and the 
+display system.  Such specs remain marked as pending until the callback succeeds, fails, or times out.  To make a
+callback timeout, you can do the following:
+
+describe("setTimeout", function():void {
+  it("sets a timeout with a callback", function():void {
+    setTimeout(eventually(function():void {
+      expect(true).to(equal(), true);
+    }), 3000);
+  }).but_times_out_after(2000);
+});
+
+In this case, it will be marked as failed, but when the callback returns and succeeds, a note will be added that
+it passed, but too late.
+
+If you normally need to pass arguments to your callback, you can still do this -- eventually correctly passes
+all arguments it receives through to the callback.  For example:
+
+describe("foo.getResponse", function():void {
+  it("eventually expects foo to respond with bar", function():void {
+    foo.getResponse("Where can I buy a beer?", eventually(function(response:String):void {
+      expect(response).to(equal(), "bar");
+    }));
+  });
+});
+
+
+=========== Adding Matchers ===========
+
+As in Screw.Unit, the matchers system is extensible.  Here is an example, assumed to be in matchers/smell.as:
+
+import flux_unit.Flux;
+
+Flux.Matchers['smell'] = function():Object {
+  return {
+    match: function(expected:*, actual:*):Boolean {
+      return actual == 'smell';
+    },
+    failure_message: function(expected:*, actual:*, not:Boolean):String {
+      return 'expected ' + actual + (not ? ' to not smell' : ' to smell');
+    }
+  }
+}
+
+A matcher is a function that is attached to the Flux.Matchers object.  It returns an object that has two function
+properties: match and failure_message.  match performs any needed comparisons between expected and actual and returns
+a boolean.  failure_message creates a message stating how exactly the match failed, including whether it was used in
+a negation (i.e., if it was called using the to() function or the to_not() function).
+
+As in the example, you can create matchers that ignore the actual value that is passed.  This is the case for matchers
+like be_null().  For example:
+
+expect(foo).to_not(be_null());
+
+To include the 'smell' matcher above in your code, you would add the following line to your init() function in your
+main mxml file:
+
+include 'matchers/smell.as';
+
+
+=========== Bug Reports, Contributing, etc. ===========
+
+This software is developed and maintained by Ian Fischer.  You can reach me at ian.fischer@post.harvard.edu.  If you
+have bug reports or would like to contribute, please contact me there.
+
+That's it!

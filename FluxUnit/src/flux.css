@@ -1,0 +1,59 @@
+Application {
+  font-family: Times, serif;
+  font-size: 12px;
+  background-gradient-colors: #EDEBD5, #EDEBD5;
+}
+
+.describe {
+  font-weight: bold;
+  border-thickness: 1px;
+  border-color: #888888;
+  border-style: solid;
+  padding-left: 10px;
+  padding-right: -1px;
+}
+
+.status {
+  font-weight: bold;
+  font-size: 14;
+}
+
+.enqueued {
+  font-weight: bold;
+  background-color: #E5D599;
+  border-color: #E5D599;
+  border-style: solid;
+  border-thickness: 1px;
+  color: white;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+.passed {
+  font-weight: bold;
+  background-color: #5A753D;
+  border-color: #5A753D;
+  border-style: solid;
+  border-thickness: 1px;
+  color: white ;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+.failed {
+  font-weight: bold;
+  background-color: #993300;
+  border-color: #993300;
+  border-style: solid;
+  border-thickness: 1px;
+  color: white ;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
