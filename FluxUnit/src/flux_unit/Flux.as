@@ -11,6 +11,11 @@ package flux_unit {
   
   public class Flux {
     
+    private static var _timeout:int = 20;
+    public static function set timeout(t:int):void {
+      _timeout = Math.max(10, t);
+    }
+    
     public function Flux(target:Object) {
       if (!topNode) throw new Error('You must call Flux.setRoot before calling new Flux');
       mixin(target, [Specifications, Matchers]);
@@ -75,7 +80,7 @@ package flux_unit {
     private static function dequeueAll():void {
       if (q.length) {
         q.shift()();
-        setTimeout(Flux.dequeueAll, 20);
+        setTimeout(Flux.dequeueAll, Flux._timeout);
       }
     }
     

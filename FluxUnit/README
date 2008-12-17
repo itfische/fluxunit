@@ -200,6 +200,29 @@ describe("foo.getResponse", function():void {
   });
 });
 
+If you are testing asynchronous calls that shouldn't be run at the same time as each other, you can modify the
+time between tests in your top level suite code as follows:
+
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="init();">
+  <mx:Style source="flux.css" />
+  <mx:Script>
+    <![CDATA[
+      import flux_unit.Flux;
+      
+      private function init():void {
+        Flux.setRoot(body);
+        Flux.timeout = 1000; // <------ This is new. Tests will have a 1000ms pause between them
+
+        Flux.Run();
+      }
+    ]]>
+  </mx:Script>
+  <mx:VBox id="body" width="100%">
+  </mx:VBox>
+</mx:Application>
+
+The default is 20ms.  The minimum you can set it to is 10ms.
 
 =========== Adding Matchers ===========
 
