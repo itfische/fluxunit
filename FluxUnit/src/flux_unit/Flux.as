@@ -1,4 +1,6 @@
 package flux_unit {
+  import flash.events.Event;
+  import flash.events.MouseEvent;
   import flash.events.TextEvent;
   import flash.utils.clearTimeout;
   import flash.utils.setTimeout;
@@ -124,6 +126,13 @@ package flux_unit {
         Flux.setClass(describes, 'describes');
         Flux.setClass(afters, 'afters');
 
+        describe.addEventListener(MouseEvent.CLICK, function(event:Event):void {
+          // TODO: run the children of this node
+          event.stopPropagation();
+          describe.data.enqueue();
+          Flux.dequeueAll();
+        });
+
         this.context.push(describe);
         fn();
         this.context.pop();
@@ -141,6 +150,13 @@ package flux_unit {
         Flux.setClass(it, 'it');
         it.data.fluxUnitFunc = fn;
         it.data.specObject = this;
+
+        it.addEventListener(MouseEvent.CLICK, function(event:Event):void {
+          // TODO: run the function of this node
+          event.stopPropagation();
+          it.data.run();
+        }, true);
+
         return {
           but_times_out_after: function(timeout:int):void {
             it.data.timeout = timeout;
@@ -480,11 +496,17 @@ package flux_unit {
         
         run: function():void {
           var node:Container = this;
+          Flux.trigger(node, 'enqueued');
+          for (var i:int = 1; i < node.getChildren().length; i++) {
+            node.removeChildAt(i);
+          }
+
           var eventuallyCalled:Boolean = false;
           this.data.specObject.eventually = function(fn:Function):Function {
             eventuallyCalled = true;
             return function(... args):* {
               if (node.data.timeoutId) clearTimeout(node.data.timeoutId);
+              node.data.timeoutId = null;
               try {
                 try {
                   node.data.parent().data.run_befores();

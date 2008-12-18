@@ -72,11 +72,11 @@ package flux_unit.spec {
         
               describe('A [describe] with two [before] and two [after] blocks', function():void {
                 var before_invocations:Array = [], after_invocations:Array = [];
-                before(function():void { before_invocations.push('before 1') });
-                before(function():void { before_invocations.push('before 2') });
+                before(function():void { before_invocations.push('before 1'); });
+                before(function():void { before_invocations.push('before 2'); });
                 
-                after(function():void { after_invocations.push('after 1') });
-                after(function():void { after_invocations.push('after 2') });
+                after(function():void { after_invocations.push('after 1'); });
+                after(function():void { after_invocations.push('after 2'); });
                 
                 it('invokes the [before]s in lexical order before each [it]', function():void {
                   expect(before_invocations).to(equal(), ['before 1', 'before 2']);
