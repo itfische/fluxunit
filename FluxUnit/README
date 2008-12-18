@@ -256,6 +256,14 @@ main mxml file:
 
 include 'matchers/smell.as';
 
+=========== Mouse Events =========== 
+
+You can selectively rerun your specs after the test suite is loaded by clicking on either an it or a describe.  This
+is probably only useful if you are testing calls to a server or other things that don't involve a change to the
+Flash code that you are testing, as it doesn't reload the test-suite itself, so if you make changes to your Flash
+code before clicking on a test, those changes will not be in the version of the test-suite you are clicking on.  It
+can also be useful if you are printing out log messages of some sort (for instance, to Firebug's console in Firefox),
+as it will let you more easily see what is being output from a given test.
 
 =========== Bug Reports, Contributing, etc. ===========
 
