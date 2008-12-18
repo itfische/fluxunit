@@ -511,7 +511,7 @@ package flux_unit {
                 try {
                   node.data.parent().data.run_befores();
                   fn.apply(this, args);
-                  if (node.styleName == 'enqueued') Flux.trigger(node, 'passed');
+                  if (node.styleName == 'enqueued' || node.styleName == 'passed') Flux.trigger(node, 'passed');
                   else Flux.trigger(node, 'failed', 'it passed, but too late');
                 }
                 finally {
